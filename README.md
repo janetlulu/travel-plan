@@ -1,3 +1,5 @@
+![build status](http://ci.tomas.website/api/badges/reactgrils/travel-plan/status.svg?branch=master)
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
