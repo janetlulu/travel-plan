@@ -1,43 +1,63 @@
-import React, { Component } from 'react';
-import './App.css';
+import React, { Component } from "react";
+import "./App.css";
+// import auth from "./base";
+import { auth as dbAuth } from "./base";
 
+class Authenticate extends Component {
+  state = {
+    account: "",
+    password: "",
+    isCreate: false
+  };
+  toggleRegister = () => {
+    this.setState({ isCreate: !this.state.isCreate });
+  };
 
-class LoginPage extends Component {
-  idRef = React.createRef();
-  pwdRef = React.createRef();
+  inputChange = e => {
+    const { name, value } = e.target;
+    this.setState({ [name]: value });
+  };
 
-  onSubmit = (e) => {
-    e.preventDefault();
-    const id = this.idRef.current.value;
-    const pwd = this.pwdRef.current.value;
-    if (id === "" || pwd === "") {
-      alert("帳號密碼未輸入!");
-      return;
-    }
-    this.props.login({id, pwd});
-  }
+  handleRegister = () => {
+    this.props.register(this.state.account, this.state.password);
+  };
+
+  handleLogin = () => {
+    this.props.login(this.state.account, this.state.password);
+  };
 
   render() {
+    let isCreate = this.state.isCreate;
     return (
-      <form onSubmit={this.onSubmit}>
+      <div>
+        {isCreate ? "註冊" : "登入"}
+        <hr />
         <div>
           <label> 帳號 </label>
-          <input type="text" ref={this.idRef}/>
+          <input type="text" name="account" onChange={this.inputChange} />
         </div>
         <div>
           <label> 密碼 </label>
-          <input type="password" ref={this.pwdRef}/>
+          <input type="password" name="password" onChange={this.inputChange} />
         </div>
-        <button>登入</button>
+        {isCreate ? (
+          <button onClick={this.handleRegister}>註冊</button>
+        ) : (
+          <button onClick={this.handleLogin}>登入</button>
+        )}
+        <br />
+        <button
+          className="facebook"
+          onClick={() => this.props.loginSocial("Facebook")}
+        >
+          Facebook 登入
+        </button>
 
-        <br /><br /><br />
-        <div>
-          測試帳密:
-          <p>AAA / AAA123</p>
-          <p>BBB / BBB123</p>
-          <p>CCC / CCC123</p>
-        </div>
-      </form>
+        <br />
+        <button onClick={this.toggleRegister}>
+          {isCreate ? "已有帳號? 登入" : "第一次使用? 註冊去"}
+        </button>
+      </div>
     );
   }
 }
@@ -46,48 +66,63 @@ class MainPage extends Component {
   render() {
     return (
       <div>
-        登入成功!! <br/>
+        Hi, {this.props.name} <br />
+        登入成功!! <br />
         <button onClick={this.props.logout}>登出</button>
       </div>
-    )
+    );
   }
 }
 
 class App extends Component {
   state = {
-    isLogin: false,
-    accounts: [
-      { id: "AAA", pwd: "AAA123"},
-      { id: "BBB", pwd: "BBB123"},
-      { id: "CCC", pwd: "CCC123"},
-    ]
+    uid: null,
+    name: null
+  };
+
+  componentDidMount() {
+    dbAuth.getAuth(this.authHandler);
   }
 
-  login = (info) => {
-    const result = (this.state.accounts).some((acc, index, array) => {
-      return (acc.id === info.id) && (acc.pwd === info.pwd);
-    });
-
-    if (result) {
-      this.setState({
-        isLogin: !this.state.isLogin
-      });
-    } else {
-      alert ("帳號或密碼錯誤");
-    }
-  };
-
-  logout = e => {
+  authHandler = async authData => {
+    console.log("authHandler, authData=", authData);
     this.setState({
-      isLogin: !this.state.isLogin
+      uid: authData.user.uid,
+      name: authData.user.displayName || authData.user.email
     });
   };
+
+  register = (account, password) => {
+    dbAuth.createUserByEmail(account, password);
+  };
+
+  login = (account, password) => {
+    dbAuth.login(account, password, dbAuth.getAuth(this.authHandler));
+  };
+
+  loginSocial = provider => {
+    dbAuth.loginSocial(provider, dbAuth.getAuth(this.authHandler));
+  };
+
+  logout = async () => {
+    console.log("logout!");
+    await dbAuth.signOut();
+    this.setState({ uid: null, name: null });
+  };
+
   render() {
-    var { isLogin } = this.state;
     return (
       <div className="App">
         <header className="App-header">
-          {isLogin ? <MainPage logout={this.logout} /> : <LoginPage login={this.login}></LoginPage>}
+          {!this.state.uid ? (
+            <Authenticate
+              register={this.register}
+              login={this.login}
+              loginSocial={this.loginSocial}
+            />
+          ) : (
+            <MainPage logout={this.logout} name={this.state.name} />
+          )}
         </header>
       </div>
     );
