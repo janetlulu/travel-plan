@@ -1,26 +1,18 @@
-
 # 旅行計畫表
+
+- 練習 react 的專案
+
+- 一個規劃旅遊行程的 web
 
 [Live Demo](http://travel-plan.tomas.website/)
 
-## Available Scripts
+## 預計功能
 
-In the project directory, you can run:
+1. 權限管理
+   註冊、登入登出
 
-### `npm start`
+2. 行程表
+   紀錄旅遊詳細行程時間表
 
-Runs the app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-
-The page will reload if you make edits.<br>
-You will also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.<br>
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.<br>
-It correctly bundles React in production mode and optimizes the build for the best performance.
+3. 行李確認表
+   紀錄當次旅行需要攜帶的物品，供出發前做確認
