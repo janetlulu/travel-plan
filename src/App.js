@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import {
   Typography,
   Button,
@@ -13,9 +14,31 @@ import {
   createMuiTheme,
   withStyles
 } from '@material-ui/core/styles';
-import './App.css';
-import { auth as dbAuth } from './base';
 import { isEmpty } from 'lodash';
+import {
+  userGetAuth,
+  userCreateByEmail,
+  userLogin,
+  userLoginSocial,
+  userSignOut
+} from './userAction';
+
+const SubmitButton = props => {
+  const { isCreate, handleRegister, handleLogin } = props;
+  const text = isCreate ? '註冊' : '登入';
+  const action = isCreate ? handleRegister : handleLogin;
+  return (
+    <Button
+      variant="contained"
+      color="primary"
+      size="large"
+      fullWidth
+      onClick={action}
+    >
+      {text}
+    </Button>
+  );
+};
 
 class Authenticate extends Component {
   state = {
@@ -63,7 +86,6 @@ class Authenticate extends Component {
               onChange={this.inputChange}
               margin="normal"
             />
-            <br />
             <TextField
               label="密碼"
               type="password"
@@ -73,27 +95,11 @@ class Authenticate extends Component {
               margin="normal"
             />
           </form>
-          {isCreate ? (
-            <Button
-              variant="contained"
-              color="primary"
-              size="large"
-              fullWidth
-              onClick={this.handleRegister}
-            >
-              註冊
-            </Button>
-          ) : (
-            <Button
-              variant="contained"
-              color="primary"
-              size="large"
-              fullWidth
-              onClick={this.handleLogin}
-            >
-              登入
-            </Button>
-          )}
+          <SubmitButton
+            isCreate={isCreate}
+            handleRegister={this.handleRegister}
+            handleLogin={this.handleLogin}
+          />
 
           <div className={classes.hrContainer}>
             <div className={classes.hr} />
@@ -104,15 +110,13 @@ class Authenticate extends Component {
           <Button
             variant="contained"
             size="large"
+            fullWidth
             className={classes.facebook}
             onClick={() => this.props.loginSocial('Facebook')}
           >
             Facebook 登入
           </Button>
 
-          <br />
-          <br />
-          <br />
           <Link
             component="button"
             variant="body2"
@@ -130,8 +134,8 @@ class MainPage extends Component {
   render() {
     return (
       <div>
-        Hi, {this.props.name} <br />
-        登入成功!! <br />
+        <p>Hi, {this.props.name}</p>
+        <p>登入成功!!</p>
         <Button variant="contained" color="primary" onClick={this.props.logout}>
           登出
         </Button>
@@ -139,44 +143,29 @@ class MainPage extends Component {
     );
   }
 }
-
 class App extends Component {
-  state = {
-    uid: null,
-    name: null
-  };
-
-  componentDidMount() {
-    dbAuth.getAuth(this.authHandler);
+  async componentDidMount() {
+    await this.props.userGetAuth();
   }
 
-  authHandler = authData => {
-    const { uid, displayName, email } = authData.user;
-    const name = displayName || email;
-    const nextState = { uid, name };
-
-    this.setState(state => ({ ...state, ...nextState }));
+  register = async (account, password) => {
+    await this.props.userCreateByEmail(account, password);
   };
 
-  register = (account, password) => {
-    dbAuth.createUserByEmail(account, password);
+  login = async (account, password) => {
+    await this.props.userLogin(account, password);
   };
 
-  login = (account, password) => {
-    dbAuth.login(account, password, dbAuth.getAuth(this.authHandler));
-  };
-
-  loginSocial = provider => {
-    dbAuth.loginSocial(provider, dbAuth.getAuth(this.authHandler));
+  loginSocial = async provider => {
+    await this.props.userLoginSocial(provider);
   };
 
   logout = async () => {
-    await dbAuth.signOut();
-    this.setState({ uid: null, name: null });
+    await this.props.userSignOut();
   };
 
   render() {
-    const isAuth = isEmpty(this.state.uid);
+    const isAuth = isEmpty(this.props.user.uid);
     const classes = this.props.classes;
     return (
       <MuiThemeProvider theme={Theme}>
@@ -198,6 +187,10 @@ class App extends Component {
     );
   }
 }
+
+const mapStateToProps = state => ({
+  user: state.user
+});
 
 const Theme = createMuiTheme({
   typography: {
@@ -251,8 +244,18 @@ const styles = theme => ({
   },
   facebook: {
     background: 'linear-gradient(45deg, #3C5A99 30%, #3C5A99 90%)',
-    color: 'white'
+    color: 'white',
+    marginBottom: '1rem'
   }
 });
 
-export default withStyles(styles, { withTheme: true })(App);
+export default connect(
+  mapStateToProps,
+  {
+    userGetAuth,
+    userCreateByEmail,
+    userLogin,
+    userLoginSocial,
+    userSignOut
+  }
+)(withStyles(styles, { withTheme: true })(App));
