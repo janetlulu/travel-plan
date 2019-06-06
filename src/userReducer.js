@@ -1,6 +1,7 @@
 const initState = {
   uid: '',
-  name: ''
+  name: '',
+  isLogin: false
 };
 
 const user = (state = initState, action) => {
@@ -8,7 +9,7 @@ const user = (state = initState, action) => {
     case 'USER_LOGIN':
       return {
         ...state,
-        ...action.value
+        ...action.user
       };
     case 'USER_SING_OUT': {
       return initState;
