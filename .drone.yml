@@ -7,8 +7,7 @@ pipeline:
     port: 22
     username: root
     user: root
-    password:
-      from_secret: ssh_password
+    secrets: [ root, ssh_password ]
     target: /root
     source:
       - /drone/src/github.com/reactgrils/travel-plan
@@ -20,8 +19,7 @@ pipeline:
       - travel-plan.tomas.website
     username: root
     user: root
-    password:
-      from_secret: ssh_password
+    secrets: [ root, ssh_password ]
     command_timeout: 600
     script:
       - . /root/.nvm/nvm.sh && nvm use 10.9.0
