@@ -14,7 +14,6 @@ pipeline:
       - /drone/src/github.com/reactgrils/travel-plan
     when:
       branch: master
-
   ssh:
     image: appleboy/drone-ssh
     host:
