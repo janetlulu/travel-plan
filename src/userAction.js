@@ -45,25 +45,27 @@ export const userCreateByEmail = async (email, password) => {
   }
 };
 
-export const userLogin = async (email, password) => {
-  try {
-    await firebase.auth().signInWithEmailAndPassword(email, password);
-    alert('login ok');
-    userGetAuth();
-  } catch (error) {
-    let errorCode = error.code;
-    let errorMessage = error.message;
-    switch (errorCode) {
-      case 'auth/user-not-found':
-        alert('帳號不存在');
-        break;
-      case 'auth/wrong-password':
-        alert('帳號或密碼錯誤');
-        break;
-      default:
-        alert(errorCode, errorMessage);
+export const userLogin = (email, password) => {
+  return async dispatch => {
+    try {
+      await firebase.auth().signInWithEmailAndPassword(email, password);
+      alert('login ok');
+      userGetAuth();
+    } catch (error) {
+      let errorCode = error.code;
+      let errorMessage = error.message;
+      switch (errorCode) {
+        case 'auth/user-not-found':
+          alert('帳號不存在');
+          break;
+        case 'auth/wrong-password':
+          alert('帳號或密碼錯誤');
+          break;
+        default:
+          alert(errorCode, errorMessage);
+      }
     }
-  }
+  };
 };
 
 export const userLoginSocial = async provider => {

@@ -152,8 +152,8 @@ class App extends Component {
     await this.props.userCreateByEmail(account, password);
   };
 
-  login = async (account, password) => {
-    await this.props.userLogin(account, password);
+  login = (account, password) => {
+    this.props.userLogin(account, password);
   };
 
   loginSocial = async provider => {
