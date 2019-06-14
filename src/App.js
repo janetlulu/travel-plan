@@ -117,6 +117,26 @@ class Authenticate extends Component {
             Facebook 登入
           </Button>
 
+          <Button
+            variant="contained"
+            size="large"
+            fullWidth
+            className={classes.google}
+            onClick={() => this.props.loginSocial('Google')}
+          >
+            Google 登入
+          </Button>
+
+          <Button
+            variant="contained"
+            size="large"
+            fullWidth
+            className={classes.github}
+            onClick={() => this.props.loginSocial('Github')}
+          >
+            Github 登入
+          </Button>
+
           <Link
             component="button"
             variant="body2"
@@ -165,21 +185,21 @@ class App extends Component {
   };
 
   render() {
-    const isAuth = isEmpty(this.props.user.uid);
+    const { isLogin, name } = this.props.user;
     const classes = this.props.classes;
     return (
       <MuiThemeProvider theme={Theme}>
         <div className={classes.container}>
           <Grid item xs={12} sm={8} className={classes.grid}>
-            {isAuth ? (
+            {isLogin ? (
+              <MainPage logout={this.logout} name={name} />
+            ) : (
               <Authenticate
                 classes={classes}
                 register={this.register}
                 login={this.login}
                 loginSocial={this.loginSocial}
               />
-            ) : (
-              <MainPage logout={this.logout} name={this.state.name} />
             )}
           </Grid>
         </div>
@@ -243,7 +263,17 @@ const styles = theme => ({
     backgroundColor: '#ccc'
   },
   facebook: {
-    background: 'linear-gradient(45deg, #3C5A99 30%, #3C5A99 90%)',
+    background: '#3C5A99',
+    color: 'white',
+    marginBottom: '1rem'
+  },
+  google: {
+    background: '#fa6457',
+    color: 'white',
+    marginBottom: '1rem'
+  },
+  github: {
+    background: '#262626',
     color: 'white',
     marginBottom: '1rem'
   }
