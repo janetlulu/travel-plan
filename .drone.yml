@@ -5,8 +5,6 @@ pipeline:
     host:
       - travel-plan.tomas.website
     port: 22
-    username: root
-    user: root
     secrets: [ root, ssh_password ]
     target: /root
     source:
@@ -17,8 +15,6 @@ pipeline:
     image: appleboy/drone-ssh
     host:
       - travel-plan.tomas.website
-    username: root
-    user: root
     secrets: [ root, ssh_password ]
     command_timeout: 600
     script:
