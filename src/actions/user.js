@@ -1,15 +1,32 @@
-import firebase from './firebase';
+import firebase from '../firebase';
+import { USER_LOGIN_REQUEST, USER_LOGIN_SUCCESS, USER_LOGIN_ERROR, USER_SIGNOUT } from '../constants/actionTypes'
 
-export function actionUserLogin(user) {
+export function actionUserLoginRequest(payload) {
   return {
-    type: 'USER_LOGIN',
-    user
+    type: USER_LOGIN_REQUEST
+  };
+}
+
+export function actionUserLoginSuccess(payload) {
+  return {
+    type: USER_LOGIN_SUCCESS,
+    payload
+  };
+}
+
+export function actionUserLoginError(payload) {
+  return {
+    type: USER_LOGIN_ERROR,
+    payload,
+    snackbar: {
+      message: "登入失敗:" + payload.message
+    }
   };
 }
 
 export function actionUserSignOut() {
   return {
-    type: 'USER_SING_OUT'
+    type: USER_SIGNOUT
   };
 }
 
@@ -20,9 +37,21 @@ export const userGetAuth = () => {
         const { uid, displayName, email } = user;
         const name = displayName || email;
         const data = { uid, name, isLogin: true };
-        dispatch(actionUserLogin(data));
+        dispatch(actionUserLoginSuccess(data));
       }
     });
+  };
+};
+
+export const userLogin = (email, password) => {
+  return async dispatch => {
+    const payload = {
+      types: ['USER_LOGIN_REQUEST', 'USER_LOGIN_SUCCESS', 'USER_LOGIN_ERROR'],
+      promise: firebase.auth().signInWithEmailAndPassword(email, password),
+      onSuccess: actionUserLoginSuccess,
+      onError: actionUserLoginError
+    };
+    dispatch(payload);
   };
 };
 
@@ -48,28 +77,29 @@ export const userCreateByEmail = (email, password) => {
   };
 };
 
-export const userLogin = (email, password) => {
-  return async dispatch => {
-    try {
-      await firebase.auth().signInWithEmailAndPassword(email, password);
-      alert('login ok');
-      dispatch(userGetAuth());
-    } catch (error) {
-      let errorCode = error.code;
-      let errorMessage = error.message;
-      switch (errorCode) {
-        case 'auth/user-not-found':
-          alert('帳號不存在');
-          break;
-        case 'auth/wrong-password':
-          alert('帳號或密碼錯誤');
-          break;
-        default:
-          alert(errorCode, errorMessage);
-      }
-    }
-  };
-};
+
+// export const userLogin = (email, password) => {
+//   return async dispatch => {
+//     try {
+//       await firebase.auth().signInWithEmailAndPassword(email, password);
+//       alert('login ok');
+//       dispatch(userGetAuth());
+//     } catch (error) {
+//       let errorCode = error.code;
+//       let errorMessage = error.message;
+//       switch (errorCode) {
+//         case 'auth/user-not-found':
+//           alert('帳號不存在');
+//           break;
+//         case 'auth/wrong-password':
+//           alert('帳號或密碼錯誤');
+//           break;
+//         default:
+//           alert(errorCode, errorMessage);
+//       }
+//     }
+//   };
+// };
 
 export const userLoginSocial = provider => {
   return async dispatch => {

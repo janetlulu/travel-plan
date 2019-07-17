@@ -1,27 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import {
-  Typography,
-  Button,
-  Grid,
-  TextField,
-  Link,
-  Card,
-  CardContent
-} from '@material-ui/core';
-import {
-  MuiThemeProvider,
-  createMuiTheme,
-  withStyles
-} from '@material-ui/core/styles';
-import { isEmpty } from 'lodash';
-import {
-  userGetAuth,
-  userCreateByEmail,
-  userLogin,
-  userLoginSocial,
-  userSignOut
-} from './userAction';
+import { Typography, Button, Grid, TextField, Link, Card, CardContent } from '@material-ui/core';
+import { MuiThemeProvider, createMuiTheme, withStyles } from '@material-ui/core/styles';
+import { userGetAuth, userCreateByEmail, userLogin, userLoginSocial, userSignOut } from '../actions/user';
 
 const SubmitButton = props => {
   const { isCreate, handleRegister, handleLogin } = props;
@@ -194,13 +175,13 @@ class App extends Component {
             {isLogin ? (
               <MainPage logout={this.logout} name={name} />
             ) : (
-              <Authenticate
-                classes={classes}
-                register={this.register}
-                login={this.login}
-                loginSocial={this.loginSocial}
-              />
-            )}
+                <Authenticate
+                  classes={classes}
+                  register={this.register}
+                  login={this.login}
+                  loginSocial={this.loginSocial}
+                />
+              )}
           </Grid>
         </div>
       </MuiThemeProvider>
@@ -208,8 +189,9 @@ class App extends Component {
   }
 }
 
-const mapStateToProps = state => ({
-  user: state.user
+const mapStateToProps = store => ({
+  user: store.user,
+  msg: store.global.errorMsg
 });
 
 const Theme = createMuiTheme({

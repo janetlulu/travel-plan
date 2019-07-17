@@ -1,16 +1,19 @@
 const initState = {
   uid: '',
-  name: '',
-  isLogin: false
+  name: ''
 };
 
 const user = (state = initState, action) => {
   switch (action.type) {
-    case 'USER_LOGIN':
+    case 'USER_LOGIN_REQUEST':
+      return state;
+    case 'USER_LOGIN_SUCCESS':
       return {
         ...state,
-        ...action.user
+        ...action.payload
       };
+    case 'USER_LOGIN_ERROR':
+      return state;
     case 'USER_SING_OUT': {
       return initState;
     }
